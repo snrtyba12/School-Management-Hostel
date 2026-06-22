@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <title>admin</title>
+</head>
+<body class="admin-body">
+
+<!-- ══ SIDEBAR (outside .main — sibling of it) ════════ -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-logo">
+    <h2>YabaTech <span>Admin</span></h2>
+    <p>Hostel Management System</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Main</div>
+    <a href="#" class="active" onclick="showPage('dashboard', this)">
+      <i class="fa-solid fa-gauge"></i> Dashboard
+    </a>
+    <a href="#" onclick="showPage('applications', this)">
+      <i class="fa-solid fa-file-lines"></i> Applications
+    </a>
+    <a href="#" onclick="showPage('rooms', this)">
+      <i class="fa-solid fa-bed"></i> Rooms
+    </a>
+    <a href="#" onclick="showPage('residents', this)">
+      <i class="fa-solid fa-users"></i> Residents
+    </a>
+
+    <div class="nav-label">Communication</div>
+    <a href="#" onclick="showPage('messages', this)">
+      <i class="fa-solid fa-envelope"></i> Messages
+    </a>
+    <a href="#" onclick="showPage('announcements', this)">
+      <i class="fa-solid fa-bullhorn"></i> Announcements
+    </a>
+    <a href="#" onclick="showPage('maintenance', this)">
+      <i class="fa-solid fa-wrench"></i> Maintenance
+    </a>
+
+    <div class="nav-label">Finance</div>
+    <a href="#" onclick="showPage('payments', this)">
+      <i class="fa-solid fa-naira-sign"></i> Payments
+    </a>
+
+    <div class="nav-label">Settings</div>
+    <a href="#" onclick="showPage('settings', this)">
+      <i class="fa-solid fa-gear"></i> Settings
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="admin-profile">
+      <div class="admin-avatar" id="sidebarInitial">?</div>
+      <div>
+        <div class="admin-name" id="sidebarName">Loading…</div>
+        <div class="admin-role">Hostel Manager</div>
+      </div>
+      <button class="logout-btn" title="Logout" onclick="adminLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ══ MAIN ═══════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="page-title">Dashboard</h1>
+      <p id="page-sub">Welcome back, <span id="topbarName">—</span>. Here's what's happening today.</p>
+    </div>
+    <div class="topbar-right">
+      <button class="notif-btn" title="Notifications">
+        <i class="fa-solid fa-bell"></i>
+        <span class="notif-badge"></span>
+      </button>
+      <button class="hamburger-btn" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── PAGE: DASHBOARD ── -->
+  <div class="content page-section active" id="page-dashboard">
+
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">Total Residents</div>
+          <div class="stat-value" id="statTotalResidents">—</div>
+          <div class="stat-sub">Active residents</div>
+        </div>
+        <div class="stat-icon icon-green"><i class="fa-solid fa-users"></i></div>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">Pending Applications</div>
+          <div class="stat-value" id="statPendingApplications">—</div>
+          <div class="stat-sub">Needs review</div>
+        </div>
+        <div class="stat-icon icon-yellow"><i class="fa-solid fa-clock"></i></div>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">Rooms Occupied</div>
+          <div class="stat-value">94%</div>
+          <div class="stat-sub">188 of 200 rooms</div>
+        </div>
+        <div class="stat-icon icon-blue"><i class="fa-solid fa-bed"></i></div>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">New Messages</div>
+          <div class="stat-value" id="statUnreadMessages">—</div>
+          <div class="stat-sub" id="statTotalMessagesSub">Unread enquiries</div>
+        </div>
+        <div class="stat-icon icon-red"><i class="fa-solid fa-envelope"></i></div>
+      </div>
+      <div class="stat-card">
+        <div>
+          <div class="stat-label">Revenue This Sem</div>
+          <div class="stat-value">₦14.2M</div>
+          <div class="stat-sub">↑ 8% vs last sem</div>
+        </div>
+        <div class="stat-icon icon-purple"><i class="fa-solid fa-naira-sign"></i></div>
+      </div>
+    </div>
+
+    <!-- Applications + Occupancy -->
+    <div class="grid-3">
+
+      <!-- Recent Applications -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3>Recent Applications</h3>
+            <p>Latest room booking requests</p>
+          </div>
+          <a href="#" class="view-all" onclick="showPage('applications', document.querySelector('[onclick*=applications]'))">View All</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Room</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="dashRecentApplicationsBody">
+              <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Occupancy -->
+      <div class="card">
+        <div class="card-header">
+          <div><h3>Room Occupancy</h3><p>Current session</p></div>
+        </div>
+        <div class="card-body">
+          <div class="room-list">
+            <div class="room-row">
+              <div class="room-row-top">
+                <span class="room-name">Single Room</span>
+                <span class="room-count">38/40</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill fill-yellow" style="width:95%"></div></div>
+            </div>
+            <div class="room-row">
+              <div class="room-row-top">
+                <span class="room-name">Double Room</span>
+                <span class="room-count">56/60</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill fill-green" style="width:93%"></div></div>
+            </div>
+            <div class="room-row">
+              <div class="room-row-top">
+                <span class="room-name">Triple Room</span>
+                <span class="room-count">42/50</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill fill-green" style="width:84%"></div></div>
+            </div>
+            <div class="room-row">
+              <div class="room-row-top">
+                <span class="room-name">Quad Room</span>
+                <span class="room-count">24/20</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill fill-green" style="width:80%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Messages + Quick Actions -->
+    <div class="grid-2">
+
+      <!-- Recent Messages -->
+      <div class="card">
+        <div class="card-header">
+          <div><h3>Recent Messages</h3><p>Unread contact enquiries</p></div>
+          <a href="#" class="view-all" onclick="showPage('messages', document.querySelector('[onclick*=messages]'))">View All</a>
+        </div>
+        <div class="card-body">
+          <div class="msg-list" id="dashRecentMessagesList">
+            <div style="text-align:center;color:var(--muted);padding:1.5rem;">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <div><h3>Quick Actions</h3><p>Common admin tasks</p></div>
+        </div>
+        <div class="card-body">
+          <div class="quick-actions">
+            <button class="qa-btn" onclick="showPage('applications', document.querySelectorAll('.sidebar-nav a')[1])">
+              <i class="fa-solid fa-file-circle-plus"></i>
+              Review Applications
+            </button>
+            <button class="qa-btn" onclick="showPage('announcements', document.querySelectorAll('.sidebar-nav a')[6])">
+              <i class="fa-solid fa-bullhorn"></i>
+              Post Announcement
+            </button>
+            <button class="qa-btn" onclick="showPage('rooms', document.querySelectorAll('.sidebar-nav a')[2])">
+              <i class="fa-solid fa-bed"></i>
+              Manage Rooms
+            </button>
+            <button class="qa-btn" onclick="showPage('payments', document.querySelectorAll('.sidebar-nav a')[7])">
+              <i class="fa-solid fa-naira-sign"></i>
+              View Payments
+            </button>
+            <button class="qa-btn" onclick="showPage('residents', document.querySelectorAll('.sidebar-nav a')[3])">
+              <i class="fa-solid fa-users"></i>
+              View Residents
+            </button>
+            <button class="qa-btn" onclick="showPage('messages', document.querySelectorAll('.sidebar-nav a')[4])">
+              <i class="fa-solid fa-envelope"></i>
+              Read Messages
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── PAGE: APPLICATIONS ── -->
+  <div class="content page-section" id="page-applications">
+    <div class="search-bar">
+      <input class="search-input" type="text" id="appSearchInput" placeholder="Search by name or email…"/>
+      <select class="search-select" id="appStatusFilter">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Confirmed</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <select class="search-select" id="appRoomFilter">
+        <option value="">All Room Types</option>
+        <option value="single">Single</option>
+        <option value="double">Double</option>
+        <option value="triple">Triple</option>
+        <option value="quad">Quad</option>
+      </select>
+      <button class="search-btn" onclick="loadApplications()">Search</button>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div><h3>All Applications</h3><p id="appPendingCountText">Loading…</p></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Applicant</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Room</th>
+              <th>Session</th>
+              <th>Gender</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="applicationsTableBody">
+            <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: ROOMS ── -->
+  <div class="content page-section" id="page-rooms">
+    <div class="card">
+      <div class="card-header">
+        <div><h3>Room Management</h3><p>All room types and availability</p></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Room Type</th>
+              <th>Capacity</th>
+              <th>Total Rooms</th>
+              <th>Occupied</th>
+              <th>Available</th>
+              <th>Price / Sem</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Single Room</strong></td><td>1</td><td>40</td><td>38</td><td>2</td><td>₦45,000</td><td><span class="badge badge-pending">Almost Full</span></td></tr>
+            <tr><td><strong>Double Room</strong></td><td>2</td><td>30</td><td>28</td><td>2</td><td>₦30,000</td><td><span class="badge badge-confirmed">Available</span></td></tr>
+            <tr><td><strong>Triple Room</strong></td><td>3</td><td>20</td><td>14</td><td>6</td><td>₦20,000</td><td><span class="badge badge-confirmed">Available</span></td></tr>
+            <tr><td><strong>Quad Room</strong></td><td>4</td><td>20</td><td>16</td><td>4</td><td>₦15,000</td><td><span class="badge badge-confirmed">Available</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: RESIDENTS ── -->
+  <div class="content page-section" id="page-residents">
+    <div class="search-bar">
+      <input class="search-input" type="text" id="residentSearchInput" placeholder="Search residents…"/>
+      <select class="search-select" id="residentGenderFilter">
+        <option value="">All Genders</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+      <button class="search-btn" onclick="loadResidents()">Search</button>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div><h3>Current Residents</h3><p id="residentCountText">Loading…</p></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Name</th><th>Room</th><th>Matric No</th><th>Level</th><th>Gender</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody id="residentsTableBody">
+            <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: MESSAGES ── -->
+  <div class="content page-section" id="page-messages">
+    <div class="card">
+      <div class="card-header">
+        <div><h3>Contact Messages</h3><p id="messagesUnreadText">Loading…</p></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>From</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th><th>Action</th></tr>
+          </thead>
+          <tbody id="messagesTableBody">
+            <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: ANNOUNCEMENTS ── -->
+  <div class="content page-section" id="page-announcements">
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-header"><div><h3>Post New Announcement</h3></div></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <input class="search-input" type="text" id="annTitleInput" placeholder="Announcement title…" style="width:100%;"/>
+          <textarea id="annBodyInput" placeholder="Write your announcement here…" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;height:100px;resize:vertical;outline:none;"></textarea>
+          <button class="search-btn" id="annPostBtn" style="width:fit-content;" onclick="postAnnouncement()">Post Announcement</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><h3>Previous Announcements</h3></div></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:1rem;" id="announcementsList">
+          <div style="text-align:center;color:var(--muted);padding:1.5rem;">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: PAYMENTS ── -->
+  <div class="content page-section" id="page-maintenance">
+    <div class="search-bar">
+      <select class="search-select" id="maintStatusFilter">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="in-progress">In Progress</option>
+        <option value="resolved">Resolved</option>
+      </select>
+      <button class="search-btn" onclick="loadMaintenance()">Filter</button>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div><h3>Maintenance Requests</h3><p id="maintCountText">Loading…</p></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Matric No</th>
+              <th>Room</th>
+              <th>Issue Type</th>
+              <th>Description</th>
+              <th>Priority</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="maintenanceTableBody">
+            <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:1.5rem;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+    <div class="stats-grid" style="margin-bottom:1.5rem;">
+      <div class="stat-card"><div><div class="stat-label">Total Collected</div><div class="stat-value">₦14.2M</div><div class="stat-sub">This semester</div></div><div class="stat-icon icon-green"><i class="fa-solid fa-naira-sign"></i></div></div>
+      <div class="stat-card"><div><div class="stat-label">Pending Payment</div><div class="stat-value">₦1.8M</div><div class="stat-sub">23 residents</div></div><div class="stat-icon icon-yellow"><i class="fa-solid fa-clock"></i></div></div>
+      <div class="stat-card"><div><div class="stat-label">Fully Paid</div><div class="stat-value">459</div><div class="stat-sub">Residents</div></div><div class="stat-icon icon-blue"><i class="fa-solid fa-check"></i></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><h3>Payment Records</h3></div></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Resident</th><th>Room</th><th>Amount</th><th>Date Paid</th><th>Method</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Chioma Okonkwo</strong></td><td>Single</td><td>₦45,000</td><td>Jan 10, 2026</td><td>Bank Transfer</td><td><span class="badge badge-confirmed">Paid</span></td></tr>
+            <tr><td><strong>Seun Martins</strong></td><td>Double</td><td>₦30,000</td><td>Jan 8, 2026</td><td>Bank Transfer</td><td><span class="badge badge-confirmed">Paid</span></td></tr>
+            <tr><td><strong>Tunde Adekunle</strong></td><td>Quad</td><td>₦15,000</td><td>—</td><td>—</td><td><span class="badge badge-pending">Pending</span></td></tr>
+            <tr><td><strong>Amara Johnson</strong></td><td>Suite</td><td>₦90,000</td><td>Jan 5, 2026</td><td>Cash</td><td><span class="badge badge-confirmed">Paid</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGE: SETTINGS ── -->
+  <div class="content page-section" id="page-settings">
+    <div class="card" style="max-width:600px;">
+      <div class="card-header"><div><h3>Admin Settings</h3><p>Manage your account and hostel info</p></div></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:1.2rem;">
+          <div>
+            <label style="font-size:0.83rem;font-weight:600;display:block;margin-bottom:0.4rem;">Hostel Name</label>
+            <input class="search-input" style="width:100%;" value="Yabatech Student Hostel"/>
+          </div>
+          <div>
+            <label style="font-size:0.83rem;font-weight:600;display:block;margin-bottom:0.4rem;">Admin Email</label>
+            <input class="search-input" style="width:100%;" value="info@Yabatechhostel.ng"/>
+          </div>
+          <div>
+            <label style="font-size:0.83rem;font-weight:600;display:block;margin-bottom:0.4rem;">Phone Number</label>
+            <input class="search-input" style="width:100%;" value="+234 801 234 5678"/>
+          </div>
+          <div>
+            <label style="font-size:0.83rem;font-weight:600;display:block;margin-bottom:0.4rem;">Current Password</label>
+            <input class="search-input" style="width:100%;" type="password" placeholder="Enter current password"/>
+          </div>
+          <div>
+            <label style="font-size:0.83rem;font-weight:600;display:block;margin-bottom:0.4rem;">New Password</label>
+            <input class="search-input" style="width:100%;" type="password" placeholder="Enter new password"/>
+          </div>
+          <button class="search-btn" onclick="alert('Settings saved!')">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="main-footer">
+    © 2026 YabaTech Student Hostel · Admin Panel · All rights reserved
+  </div> -->
+
+</div>
+    <script src="script.js"></script>
+    <script>
+      const API_BASE = 'http://localhost:5000';
+      const adminToken = localStorage.getItem('adminToken');
+
+      // ── Guard: redirect to login if not authenticated ──
+      if (!localStorage.getItem('adminLoggedIn') || !adminToken) {
+        window.location.href = 'adminlogin.html';
+      }
+
+      // ── Populate name everywhere from localStorage ──
+      const adminName    = localStorage.getItem('adminName')    || 'Admin';
+      const adminInitial = localStorage.getItem('adminInitial') || 'A';
+
+      document.getElementById('sidebarName').textContent    = adminName;
+      document.getElementById('sidebarInitial').textContent = adminInitial;
+      document.getElementById('topbarName').textContent     = adminName;
+
+      // ── Logout: clear storage and go back to login ──
+      function adminLogout() {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminName');
+        localStorage.removeItem('adminInitial');
+        localStorage.removeItem('adminLoggedIn');
+        window.location.href = 'adminlogin.html';
+      }
+
+      // ── Shared authenticated fetch helper ──
+      async function adminFetch(path, options = {}) {
+        const res = await fetch(`${API_BASE}${path}`, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminToken}`,
+            ...(options.headers || {}),
+          },
+        });
+        if (res.status === 401) {
+          localStorage.clear();
+          window.location.href = 'adminlogin.html';
+          throw new Error('Session expired');
+        }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Request failed');
+        return data;
+      }
+
+      function formatDate(iso) {
+        return new Date(iso).toLocaleDateString('en-NG', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+
+      function timeAgo(iso) {
+        const diff = Date.now() - new Date(iso).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return 'Just now';
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs}h ago`;
+        const days = Math.floor(hrs / 24);
+        if (days === 1) return 'Yesterday';
+        return `${days}d ago`;
+      }
+
+      function statusBadge(status) {
+        const map = {
+          pending:  ['badge-pending', 'Pending'],
+          approved: ['badge-confirmed', 'Confirmed'],
+          rejected: ['badge-rejected', 'Rejected'],
+        };
+        const [cls, label] = map[status] || ['badge-pending', status];
+        return `<span class="badge ${cls}">${label}</span>`;
+      }
+
+      // ══ STATS ══════════════════════════════════════════
+      async function loadStats() {
+        try {
+          const stats = await adminFetch('/api/admin/stats');
+          document.getElementById('statTotalResidents').textContent     = stats.totalResidents;
+          document.getElementById('statPendingApplications').textContent = stats.pendingApplications;
+          document.getElementById('statUnreadMessages').textContent      = stats.unreadMessages;
+          document.getElementById('statTotalMessagesSub').textContent    =
+            `${stats.totalMessages} total · ${stats.unreadMessages} unread`;
+        } catch (err) {
+          console.error('Failed to load stats:', err);
+        }
+      }
+
+      // ══ APPLICATIONS ═══════════════════════════════════
+      let allApplications = [];
+
+      async function loadApplications() {
+        const tbody = document.getElementById('applicationsTableBody');
+        const dashTbody = document.getElementById('dashRecentApplicationsBody');
+        try {
+          allApplications = await adminFetch('/api/admin/applications');
+          renderApplications();
+
+          // Dashboard preview: most recent 5
+          if (dashTbody) {
+            const recent = allApplications.slice(0, 5);
+            dashTbody.innerHTML = recent.length ? recent.map(app => `
+              <tr>
+                <td><strong>${app.firstName} ${app.lastName}</strong><br/><span style="font-size:0.75rem;color:var(--muted)">${app.matricNo}</span></td>
+                <td>${app.roomType}</td>
+                <td>${formatDate(app.createdAt)}</td>
+                <td>${statusBadge(app.status)}</td>
+                <td>
+                  ${app.status === 'pending' ? `
+                    <div class="action-btns">
+                      <button class="act-btn act-confirm" onclick="setApplicationStatus('${app._id}','approved')">✓</button>
+                      <button class="act-btn act-reject" onclick="setApplicationStatus('${app._id}','rejected')">✕</button>
+                    </div>` : `<button class="act-btn act-view" onclick="showPage('applications', document.querySelector('[onclick*=applications]'))">View</button>`}
+                </td>
+              </tr>
+            `).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem;">No applications yet</td></tr>`;
+          }
+        } catch (err) {
+          console.error('Failed to load applications:', err);
+          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:1.5rem;">Could not load applications</td></tr>`;
+        }
+      }
+
+      function renderApplications() {
+        const tbody = document.getElementById('applicationsTableBody');
+        const searchTerm = (document.getElementById('appSearchInput')?.value || '').toLowerCase();
+        const statusFilter = document.getElementById('appStatusFilter')?.value || '';
+        const roomFilter = document.getElementById('appRoomFilter')?.value || '';
+
+        let filtered = allApplications.filter(app => {
+          const matchesSearch = !searchTerm ||
+            `${app.firstName} ${app.lastName}`.toLowerCase().includes(searchTerm) ||
+            app.email.toLowerCase().includes(searchTerm);
+          const matchesStatus = !statusFilter || app.status === statusFilter;
+          const matchesRoom = !roomFilter || app.roomType === roomFilter;
+          return matchesSearch && matchesStatus && matchesRoom;
+        });
+
+        const pendingCount = allApplications.filter(a => a.status === 'pending').length;
+        document.getElementById('appPendingCountText').textContent = `${pendingCount} pending review`;
+
+        tbody.innerHTML = filtered.length ? filtered.map((app, i) => `
+          <tr>
+            <td>${String(i + 1).padStart(3, '0')}</td>
+            <td><strong>${app.firstName} ${app.lastName}</strong><br/><span style="font-size:0.73rem;color:var(--muted)">${app.department || ''} ${app.department ? '·' : ''} ${app.level || ''}</span></td>
+            <td>${app.email}</td>
+            <td>${app.phone || '—'}</td>
+            <td>${app.roomType}</td>
+            <td>${app.session}</td>
+            <td>${app.gender || '—'}</td>
+            <td>${formatDate(app.createdAt)}</td>
+            <td>${statusBadge(app.status)}</td>
+            <td>
+              ${app.status === 'pending' ? `
+                <div class="action-btns">
+                  <button class="act-btn act-confirm" onclick="setApplicationStatus('${app._id}','approved')">Confirm</button>
+                  <button class="act-btn act-reject" onclick="setApplicationStatus('${app._id}','rejected')">Reject</button>
+                </div>` : `<span style="color:var(--muted);font-size:0.8rem;">No actions</span>`}
+            </td>
+          </tr>
+        `).join('') : `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:1.5rem;">No applications match your filters</td></tr>`;
+      }
+
+      async function setApplicationStatus(id, status) {
+        try {
+          await adminFetch(`/api/admin/applications/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({ status }),
+          });
+          await loadApplications();
+          await loadStats();
+        } catch (err) {
+          alert(err.message || 'Could not update application');
+        }
+      }
+
+      // Hook up live search/filter inputs
+      document.addEventListener('input', (e) => {
+        if (['appSearchInput', 'appStatusFilter', 'appRoomFilter'].includes(e.target.id)) {
+          renderApplications();
+        }
+      });
+
+      // ══ RESIDENTS ══════════════════════════════════════
+      let allResidents = [];
+
+      async function loadResidents() {
+        const tbody = document.getElementById('residentsTableBody');
+        try {
+          allResidents = await adminFetch('/api/admin/residents');
+          renderResidents();
+        } catch (err) {
+          console.error('Failed to load residents:', err);
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:1.5rem;">Could not load residents</td></tr>`;
+        }
+      }
+
+      function renderResidents() {
+        const tbody = document.getElementById('residentsTableBody');
+        const searchTerm = (document.getElementById('residentSearchInput')?.value || '').toLowerCase();
+        const genderFilter = document.getElementById('residentGenderFilter')?.value || '';
+
+        let filtered = allResidents.filter(s => {
+          const matchesSearch = !searchTerm ||
+            `${s.firstName} ${s.lastName}`.toLowerCase().includes(searchTerm) ||
+            s.matricNo.toLowerCase().includes(searchTerm);
+          const matchesGender = !genderFilter || s.gender === genderFilter;
+          return matchesSearch && matchesGender;
+        });
+
+        document.getElementById('residentCountText').textContent = `${allResidents.length} residents this session`;
+
+        tbody.innerHTML = filtered.length ? filtered.map((s, i) => {
+          const room = s.roomAssigned || {};
+          const roomLabel = room.roomNumber
+            ? `${room.roomType || ''} — Rm ${room.roomNumber}${room.block ? ' (' + room.block + ')' : ''}`
+            : 'Not assigned';
+          return `
+          <tr>
+            <td>${String(i + 1).padStart(3, '0')}</td>
+            <td><strong>${s.firstName} ${s.lastName}</strong></td>
+            <td>${roomLabel}</td>
+            <td>${s.matricNo}</td>
+            <td>${s.level}</td>
+            <td>${s.gender}</td>
+            <td><span class="badge ${s.status === 'active' ? 'badge-confirmed' : 'badge-rejected'}">${s.status}</span></td>
+            <td><button class="act-btn act-confirm" onclick="openAssignRoom('${s._id}','${s.firstName} ${s.lastName}')">Assign Room</button></td>
+          </tr>`;
+        }).join('') : `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:1.5rem;">No residents match your filters</td></tr>`;
+      }
+
+      document.addEventListener('input', (e) => {
+        if (['residentSearchInput', 'residentGenderFilter'].includes(e.target.id)) {
+          renderResidents();
+        }
+      });
+
+      async function openAssignRoom(studentId, name) {
+        const roomNumber = prompt(`Room number for ${name}:`);
+        if (roomNumber === null) return;
+        const block = prompt(`Block (e.g. A, B):`);
+        if (block === null) return;
+        const roomType = prompt(`Room type (single, double, triple, quad):`);
+        if (roomType === null) return;
+        const floor = prompt(`Floor (e.g. Ground, 1st, 2nd):`);
+        if (floor === null) return;
+
+        try {
+          await adminFetch(`/api/admin/residents/${studentId}/assign-room`, {
+            method: 'PUT',
+            body: JSON.stringify({ roomNumber, block, roomType, floor }),
+          });
+          await loadResidents();
+          alert('Room assigned successfully');
+        } catch (err) {
+          alert(err.message || 'Could not assign room');
+        }
+      }
+
+      // ══ MESSAGES ═══════════════════════════════════════
+      async function loadMessages() {
+        const tbody = document.getElementById('messagesTableBody');
+        const dashList = document.getElementById('dashRecentMessagesList');
+        try {
+          const messages = await adminFetch('/api/admin/messages');
+          const unreadCount = messages.filter(m => !m.read).length;
+          document.getElementById('messagesUnreadText').textContent = `${unreadCount} unread message${unreadCount === 1 ? '' : 's'}`;
+
+          tbody.innerHTML = messages.length ? messages.map(m => `
+            <tr>
+              <td><strong>${m.firstName} ${m.lastName || ''}</strong></td>
+              <td>${m.email}</td>
+              <td>${m.subject}</td>
+              <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.message}</td>
+              <td>${timeAgo(m.createdAt)}</td>
+              <td>
+                ${m.replied
+                  ? `<button class="act-btn act-view" onclick="toggleReplyView('${m._id}')">View Reply</button>`
+                  : `<button class="act-btn act-confirm" onclick="toggleReplyBox('${m._id}')">Reply</button>`}
+              </td>
+            </tr>
+            <tr id="replyRow-${m._id}" style="display:none;">
+              <td colspan="6" style="background:#f8fafc;padding:1rem 1.2rem;">
+                ${m.replied ? `
+                  <div style="font-size:0.85rem;">
+                    <strong>Your reply (sent ${m.repliedAt ? timeAgo(m.repliedAt) : ''}):</strong>
+                    <p style="margin-top:0.4rem;color:var(--muted);white-space:pre-wrap;">${m.replyText || ''}</p>
+                  </div>
+                ` : `
+                  <div style="font-size:0.85rem;margin-bottom:0.6rem;color:var(--muted);">
+                    <strong>Original message:</strong> ${m.message}
+                  </div>
+                  <textarea id="replyText-${m._id}" placeholder="Write your reply…"
+                    style="width:100%;padding:0.7rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.87rem;height:90px;resize:vertical;outline:none;margin-bottom:0.6rem;"></textarea>
+                  <button class="act-btn act-confirm" id="sendReplyBtn-${m._id}" onclick="replyToMessage('${m._id}')">Send Reply</button>
+                  <button class="act-btn act-view" onclick="toggleReplyBox('${m._id}')">Cancel</button>
+                `}
+              </td>
+            </tr>
+          `).join('') : `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">No messages yet</td></tr>`;
+
+          if (dashList) {
+            const recent = messages.slice(0, 4);
+            dashList.innerHTML = recent.length ? recent.map(m => `
+              <div class="msg-item">
+                <div class="msg-avatar" style="background:#d8f3dc;">✉️</div>
+                <div class="msg-body">
+                  <div class="msg-name">${m.firstName} ${m.lastName || ''} ${!m.read ? '<span class="badge badge-new" style="margin-left:4px;">New</span>' : ''}</div>
+                  <div class="msg-subject">${m.subject}</div>
+                </div>
+                <div class="msg-time">${timeAgo(m.createdAt)}</div>
+              </div>
+            `).join('') : `<div style="text-align:center;color:var(--muted);padding:1.5rem;">No messages yet</div>`;
+          }
+        } catch (err) {
+          console.error('Failed to load messages:', err);
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:1.5rem;">Could not load messages</td></tr>`;
+        }
+      }
+
+      function toggleReplyBox(id) {
+        const row = document.getElementById(`replyRow-${id}`);
+        if (!row) return;
+        const isHidden = row.style.display === 'none';
+        row.style.display = isHidden ? 'table-row' : 'none';
+        if (isHidden) {
+          // mark as read the moment they open it to reply, if not already
+          markMessageRead(id, { silent: true });
+        }
+      }
+
+      function toggleReplyView(id) {
+        const row = document.getElementById(`replyRow-${id}`);
+        if (!row) return;
+        row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+      }
+
+      async function replyToMessage(id) {
+        const textarea = document.getElementById(`replyText-${id}`);
+        const replyText = textarea.value.trim();
+        if (!replyText) {
+          alert('Please write a reply before sending.');
+          return;
+        }
+        const btn = document.getElementById(`sendReplyBtn-${id}`);
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+
+        try {
+          await adminFetch(`/api/admin/messages/${id}/reply`, {
+            method: 'POST',
+            body: JSON.stringify({ replyText }),
+          });
+          await loadMessages();
+          await loadStats();
+        } catch (err) {
+          alert(err.message || 'Could not send reply. Please try again.');
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      }
+
+      async function markMessageRead(id, opts = {}) {
+        try {
+          await adminFetch(`/api/admin/messages/${id}/read`, { method: 'PUT' });
+          if (!opts.silent) {
+            await loadMessages();
+          }
+          await loadStats();
+        } catch (err) {
+          if (!opts.silent) alert(err.message || 'Could not mark message as read');
+        }
+      }
+
+      // ══ ANNOUNCEMENTS ══════════════════════════════════
+      async function loadAnnouncements() {
+        const list = document.getElementById('announcementsList');
+        try {
+          const announcements = await adminFetch('/api/admin/announcements');
+          list.innerHTML = announcements.length ? announcements.map(a => `
+            <div style="background:#f8fafc;border-radius:8px;padding:1rem;border-left:4px solid var(--green);">
+              <div style="font-weight:700;margin-bottom:0.3rem;">${a.title}</div>
+              <div style="font-size:0.85rem;color:var(--muted);">${a.body}</div>
+              <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">Posted: ${formatDate(a.createdAt)} by ${a.postedBy || 'Admin'}</div>
+            </div>
+          `).join('') : `<div style="text-align:center;color:var(--muted);padding:1.5rem;">No announcements yet</div>`;
+        } catch (err) {
+          console.error('Failed to load announcements:', err);
+          list.innerHTML = `<div style="text-align:center;color:var(--muted);padding:1.5rem;">Could not load announcements</div>`;
+        }
+      }
+
+      async function postAnnouncement() {
+        const title = document.getElementById('annTitleInput').value.trim();
+        const body = document.getElementById('annBodyInput').value.trim();
+        if (!title || !body) {
+          alert('Please fill in both the title and the announcement body.');
+          return;
+        }
+        const btn = document.getElementById('annPostBtn');
+        btn.disabled = true;
+        btn.textContent = 'Posting…';
+        try {
+          await adminFetch('/api/admin/announcements', {
+            method: 'POST',
+            body: JSON.stringify({ title, body, priority: 'normal' }),
+          });
+          document.getElementById('annTitleInput').value = '';
+          document.getElementById('annBodyInput').value = '';
+          await loadAnnouncements();
+        } catch (err) {
+          alert(err.message || 'Could not post announcement');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Post Announcement';
+        }
+      }
+
+      // ══ MAINTENANCE ════════════════════════════════════
+      let allMaintenance = [];
+
+      async function loadMaintenance() {
+        const tbody = document.getElementById('maintenanceTableBody');
+        try {
+          allMaintenance = await adminFetch('/api/admin/maintenance');
+          renderMaintenance();
+        } catch (err) {
+          console.error('Failed to load maintenance:', err);
+          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:1.5rem;">Could not load maintenance requests</td></tr>`;
+        }
+      }
+
+      function renderMaintenance() {
+        const tbody = document.getElementById('maintenanceTableBody');
+        const statusFilter = document.getElementById('maintStatusFilter')?.value || '';
+
+        const filtered = statusFilter
+          ? allMaintenance.filter(r => r.status === statusFilter)
+          : allMaintenance;
+
+        const pendingCount = allMaintenance.filter(r => r.status === 'pending').length;
+        document.getElementById('maintCountText').textContent =
+          `${allMaintenance.length} total · ${pendingCount} pending`;
+
+        const statusBadgeMap = {
+          pending:      ['badge-pending',   'Pending'],
+          'in-progress':['badge-pending',   'In Progress'],
+          resolved:     ['badge-confirmed', 'Resolved'],
+        };
+
+        tbody.innerHTML = filtered.length ? filtered.map((r, i) => {
+          const student = r.student || {};
+          const name = student.firstName
+            ? `${student.firstName} ${student.lastName || ''}`
+            : '—';
+          const matric = student.matricNo || '—';
+          const room = r.roomNumber
+            ? `${r.block ? 'Block ' + r.block + ', ' : ''}Rm ${r.roomNumber}`
+            : '—';
+          const [cls, label] = statusBadgeMap[r.status] || statusBadgeMap.pending;
+          return `
+            <tr>
+              <td>${String(i + 1).padStart(3, '0')}</td>
+              <td><strong>${name}</strong></td>
+              <td>${matric}</td>
+              <td>${room}</td>
+              <td>${r.issueType}</td>
+              <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.description}</td>
+              <td><span style="color:${r.priority === 'Urgent' ? 'var(--red)' : 'inherit'};font-weight:${r.priority === 'Urgent' ? '700' : '400'}">${r.priority}</span></td>
+              <td>${formatDate(r.createdAt)}</td>
+              <td><span class="badge ${cls}">${label}</span></td>
+              <td>
+                ${r.status !== 'resolved' ? `
+                  <select class="search-select" style="padding:0.3rem 0.5rem;font-size:0.78rem;" onchange="setMaintenanceStatus('${r._id}', this.value)">
+                    <option value="">Update…</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                  </select>
+                ` : `<span style="color:var(--muted);font-size:0.8rem;">Done</span>`}
+              </td>
+            </tr>
+          `;
+        }).join('') : `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:1.5rem;">No requests match your filter</td></tr>`;
+      }
+
+      async function setMaintenanceStatus(id, status) {
+        if (!status) return;
+        try {
+          await adminFetch(`/api/admin/maintenance/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({ status }),
+          });
+          await loadMaintenance();
+        } catch (err) {
+          alert(err.message || 'Could not update request status');
+        }
+      }
+
+      document.addEventListener('change', (e) => {
+        if (e.target.id === 'maintStatusFilter') renderMaintenance();
+      });
+
+      // ══ INITIAL LOAD ═══════════════════════════════════
+      loadStats();
+      loadApplications();
+      loadResidents();
+      loadMessages();
+      loadAnnouncements();
+      loadMaintenance();
+    </script>
+</body>
+</html>
