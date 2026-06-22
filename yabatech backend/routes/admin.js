@@ -48,6 +48,16 @@ router.put('/applications/:id', protectAdmin, async (req, res) => {
     const app = await Application.findByIdAndUpdate(req.params.id, { status }, { new: true });
     if (!app) return res.status(404).json({ message: 'Application not found' });
 
+    // If approved and this application is linked to a student account,
+    // mark the student's room type as pending assignment so it shows on their dashboard.
+    if (status === 'approved' && app.studentId) {
+      await Student.findByIdAndUpdate(app.studentId, {
+        $set: {
+          'roomAssigned.roomType': app.roomType,
+        },
+      });
+    }
+
     if (status === 'approved' || status === 'rejected') {
       sendApplicationStatusEmail({
         to: app.email,
