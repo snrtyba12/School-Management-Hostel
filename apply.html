@@ -400,12 +400,42 @@
 </footer>
 
 <script>
+  /* ── Require login before applying ── */
+  const studentToken = localStorage.getItem('studentToken');
+  if (!studentToken) {
+    alert('Please sign in or create a student account before applying for a room.');
+    window.location.href = 'studentlogin.html';
+  }
+
   let selectedRoom = 'single';
 
   // Pre-select from URL param
   const params = new URLSearchParams(window.location.search);
   if (params.get('room')) selectedRoom = params.get('room');
-  window.onload = () => { selectRoom(selectedRoom); };
+
+  window.onload = () => {
+    selectRoom(selectedRoom);
+    prefillStudentInfo();
+  };
+
+  /* ── Pre-fill known student details ── */
+  function prefillStudentInfo() {
+    const fname   = localStorage.getItem('studentFname');
+    const lname   = localStorage.getItem('studentLname');
+    const email   = localStorage.getItem('studentEmail');
+    const phone   = localStorage.getItem('studentPhone');
+    const matric  = localStorage.getItem('studentMatric');
+    const level   = localStorage.getItem('studentLevel');
+    const gender  = localStorage.getItem('studentGender');
+
+    if (fname)  document.getElementById('fname').value  = fname;
+    if (lname)  document.getElementById('lname').value  = lname;
+    if (email)  document.getElementById('email').value  = email;
+    if (phone)  document.getElementById('phone').value  = phone;
+    if (matric) document.getElementById('matric').value = matric;
+    if (level)  document.getElementById('level').value  = level;
+    if (gender) document.getElementById('gender').value = gender;
+  }
 
   /* ── Room selector ── */
   function selectRoom(type) {
@@ -479,7 +509,7 @@
   }
 
   /* ── Submit ── */
-  const API_BASE = 'http://localhost:5000';
+  const API_BASE = 'https://school-management-hostel.onrender.com';
 
   async function submitApplication() {
     const submitBtn = document.querySelector('#step3 .submit-btn');
@@ -504,7 +534,10 @@
     try {
       const res = await fetch(`${API_BASE}/api/apply`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${studentToken}`,
+        },
         body: JSON.stringify(payload),
       });
 

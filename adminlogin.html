@@ -98,8 +98,7 @@
       icon.classList.replace('fa-eye-slash', 'fa-eye');
     }
   }
-
-  const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://school-management-hostel.onrender.com';
 
   async function handleAdminLogin() {
     const nameField = document.getElementById('adminEmail');
@@ -164,13 +163,16 @@
       window.location.href = 'admin.html';
 
     } catch (err) {
-      console.error(err);
-      errorMsg.textContent = 'Could not reach the server. Make sure the backend is running.';
-      banner.style.display = 'flex';
-      banner.classList.add('show');
-      loginBtn.disabled = false;
-      loginBtn.textContent = originalText;
-    }
+  console.error("LOGIN ERROR:", err);
+
+  errorMsg.textContent = `Login failed: ${err.message}`;
+
+  banner.style.display = 'flex';
+  banner.classList.add('show');
+
+  loginBtn.disabled = false;
+  loginBtn.textContent = originalText;
+}
   }
 </script>
 </body>
