@@ -600,7 +600,7 @@
       </a>
       <a class="nav-link" onclick="showPage('announcements', this)">
         <i class="fa-solid fa-bullhorn"></i> Announcements
-        <span class="nav-badge">3</span>
+        <span class="nav-badge" id="sidebarAnnounceBadge" style="display:none;">0</span>
       </a>
 
       <div class="nav-section-label">Support</div>
@@ -635,7 +635,7 @@
         <div class="topbar-date" id="topbarDate"></div>
         <div class="notif-btn" onclick="showPage('announcements', document.querySelector('[onclick*=announcements]'))">
           <i class="fa-solid fa-bell"></i>
-          <span class="notif-dot"></span>
+          <span class="notif-dot" id="topbarNotifDot" style="display:none;"></span>
         </div>
         <div class="topbar-avatar" id="topbarAvatar" onclick="showPage('profile', document.querySelector('[onclick*=profile]'))">?</div>
       </div>
@@ -662,23 +662,23 @@
           <div class="stat-card">
             <div>
               <div class="stat-label">Room</div>
-              <div class="stat-value">12</div>
-              <div class="stat-sub">Single · Block A</div>
+              <div class="stat-value" id="statRoomNumber">—</div>
+              <div class="stat-sub" id="statRoomSub">No room assigned yet</div>
             </div>
             <div class="stat-ico ico-gold"><i class="fa-solid fa-bed"></i></div>
           </div>
           <div class="stat-card">
             <div>
               <div class="stat-label">Payment</div>
-              <div class="stat-value" style="font-size:1.2rem;color:#16a34a;">Paid</div>
-              <div class="stat-sub">₦45,000 · First Sem</div>
+              <div class="stat-value" style="font-size:1.2rem;color:#92400e;">Pending</div>
+              <div class="stat-sub">Hostel fee not yet paid</div>
             </div>
-            <div class="stat-ico ico-green"><i class="fa-solid fa-check"></i></div>
+            <div class="stat-ico ico-green"><i class="fa-solid fa-clock"></i></div>
           </div>
           <div class="stat-card">
             <div>
               <div class="stat-label">Notifications</div>
-              <div class="stat-value">3</div>
+              <div class="stat-value" id="statNotifCount">0</div>
               <div class="stat-sub">Unread announcements</div>
             </div>
             <div class="stat-ico ico-blue"><i class="fa-solid fa-bell"></i></div>
@@ -686,7 +686,7 @@
           <div class="stat-card">
             <div>
               <div class="stat-label">Requests</div>
-              <div class="stat-value">1</div>
+              <div class="stat-value" id="statRequestCount">0</div>
               <div class="stat-sub">Maintenance pending</div>
             </div>
             <div class="stat-ico ico-red"><i class="fa-solid fa-screwdriver-wrench"></i></div>
@@ -982,50 +982,10 @@
         <div class="card">
           <div class="card-head">
             <h3>All Announcements</h3>
-            <span>3 unread</span>
+            <span id="announceUnreadLabel">—</span>
           </div>
-          <div class="card-body">
-            <div class="announce-item">
-              <div class="announce-dot-wrap"><div class="announce-dot unread"></div></div>
-              <div style="flex:1;">
-                <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.2rem;">
-                  <div class="announce-title">Resumption Date — 2026/2027 Session</div>
-                  <span class="badge badge-info">New</span>
-                </div>
-                <div class="announce-body">All residents are required to resume on Monday, September 7, 2026. Room allocation letters will be sent via email before then. Ensure your payment is confirmed before arrival.</div>
-                <div class="announce-time">Posted: May 20, 2026</div>
-              </div>
-            </div>
-            <div class="announce-item">
-              <div class="announce-dot-wrap"><div class="announce-dot unread"></div></div>
-              <div style="flex:1;">
-                <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.2rem;">
-                  <div class="announce-title">Maintenance Notice — Floor 2 Bathrooms</div>
-                  <span class="badge badge-info">New</span>
-                </div>
-                <div class="announce-body">Plumbing maintenance will be carried out on May 15 between 8 AM and 12 PM. Water will be temporarily unavailable on Floor 2 during this period.</div>
-                <div class="announce-time">Posted: May 13, 2026</div>
-              </div>
-            </div>
-            <div class="announce-item">
-              <div class="announce-dot-wrap"><div class="announce-dot unread"></div></div>
-              <div style="flex:1;">
-                <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.2rem;">
-                  <div class="announce-title">Second Semester Payment Deadline</div>
-                  <span class="badge badge-info">New</span>
-                </div>
-                <div class="announce-body">All hostel fee payments for the second semester 2026/2027 must be completed before August 1, 2026. Late payment may result in loss of your room allocation.</div>
-                <div class="announce-time">Posted: April 30, 2026</div>
-              </div>
-            </div>
-            <div class="announce-item">
-              <div class="announce-dot-wrap"><div class="announce-dot read"></div></div>
-              <div style="flex:1;">
-                <div class="announce-title">New Study Room Hours</div>
-                <div class="announce-body">The study room will now be open from 7 AM to 11 PM daily. Students are reminded to maintain silence and keep the space tidy.</div>
-                <div class="announce-time">Posted: April 15, 2026</div>
-              </div>
-            </div>
+          <div class="card-body" id="announcementsList">
+            <p style="color:var(--muted);font-size:0.88rem;">Loading announcements…</p>
           </div>
         </div>
       </div>
@@ -1272,6 +1232,10 @@
       const maintRoomEl = document.getElementById('maintRoomDisplay');
       if (maintRoomEl) maintRoomEl.value = `${room.block ? 'Block ' + room.block + ', ' : ''}Room ${room.roomNumber || '—'}`;
 
+      // Top dashboard stat card
+      document.getElementById('statRoomNumber').textContent = room.roomNumber || '—';
+      document.getElementById('statRoomSub').textContent    = `${roomTypeLabel.split(' ')[0]} · Block ${room.block || '—'}`;
+
       // Already has a room — no need to apply again.
       document.getElementById('dashApplyBtn').style.display     = 'none';
       document.getElementById('roomPageApplyBtn').style.display = 'none';
@@ -1287,6 +1251,10 @@
       document.getElementById('roomPageNumber').textContent   = '—';
       document.getElementById('roomPageFloor').textContent    = '—';
       document.getElementById('roomPageBadge').textContent    = 'Pending';
+
+      // Top dashboard stat card
+      document.getElementById('statRoomNumber').textContent = '—';
+      document.getElementById('statRoomSub').textContent    = 'No room assigned yet';
 
       // No room yet — show the Apply button. checkExistingApplication() will
       // swap it to a "pending" state if they've already applied.
@@ -1319,6 +1287,88 @@
     }
   }
 
+  // ══ ANNOUNCEMENTS & NOTIFICATIONS ══════════════════
+  function timeAgoLong(iso) {
+    return new Date(iso).toLocaleDateString('en-NG', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  async function loadAnnouncements() {
+    const listEl = document.getElementById('announcementsList');
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/announcements`);
+      const announcements = await res.json();
+      if (!res.ok) throw new Error(announcements.message || 'Failed to load announcements');
+
+      // "Unread" is tracked per-browser: anything posted after the last time
+      // this student opened the Announcements page counts as unread.
+      const lastSeenRaw = localStorage.getItem('announcementsLastSeen');
+      const lastSeen = lastSeenRaw ? new Date(lastSeenRaw) : null;
+      const unreadCount = lastSeen
+        ? announcements.filter(a => new Date(a.createdAt) > lastSeen).length
+        : announcements.length;
+
+      // Update sidebar badge + topbar bell dot + dashboard stat card
+      const sidebarBadge = document.getElementById('sidebarAnnounceBadge');
+      const topbarDot    = document.getElementById('topbarNotifDot');
+      const statCount    = document.getElementById('statNotifCount');
+      if (statCount) statCount.textContent = unreadCount;
+      if (unreadCount > 0) {
+        sidebarBadge.textContent = unreadCount;
+        sidebarBadge.style.display = 'inline-block';
+        topbarDot.style.display = 'block';
+      } else {
+        sidebarBadge.style.display = 'none';
+        topbarDot.style.display = 'none';
+      }
+
+      document.getElementById('announceUnreadLabel').textContent = `${unreadCount} unread`;
+
+      if (!announcements.length) {
+        listEl.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;">No announcements yet.</p>';
+        return;
+      }
+
+      listEl.innerHTML = announcements.map(a => {
+        const isUnread = lastSeen ? new Date(a.createdAt) > lastSeen : true;
+        const urgentBadge = a.priority === 'urgent' ? '<span class="badge badge-pending" style="margin-left:0.4rem;">Urgent</span>' : '';
+        return `
+          <div class="announce-item">
+            <div class="announce-dot-wrap"><div class="announce-dot ${isUnread ? 'unread' : 'read'}"></div></div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.2rem;">
+                <div class="announce-title">${a.title}</div>
+                ${isUnread ? '<span class="badge badge-info">New</span>' : ''}${urgentBadge}
+              </div>
+              <div class="announce-body">${a.body}</div>
+              <div class="announce-time">Posted: ${timeAgoLong(a.createdAt)} · By ${a.postedBy}</div>
+            </div>
+          </div>`;
+      }).join('');
+    } catch (err) {
+      console.error('Could not load announcements:', err);
+      listEl.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;">Could not load announcements. Please refresh the page.</p>';
+    }
+  }
+
+  // Mark all current announcements as "seen" whenever the student opens the
+  // Announcements page, so the unread count clears.
+  function markAnnouncementsSeen() {
+    localStorage.setItem('announcementsLastSeen', new Date().toISOString());
+    const sidebarBadge = document.getElementById('sidebarAnnounceBadge');
+    const topbarDot    = document.getElementById('topbarNotifDot');
+    const statCount    = document.getElementById('statNotifCount');
+    if (sidebarBadge) sidebarBadge.style.display = 'none';
+    if (topbarDot)    topbarDot.style.display = 'none';
+    if (statCount)    statCount.textContent = '0';
+    document.getElementById('announceUnreadLabel').textContent = '0 unread';
+    // Re-render the list so the "New" badges and dots clear immediately.
+    document.querySelectorAll('#announcementsList .announce-dot').forEach(d => {
+      d.classList.remove('unread');
+      d.classList.add('read');
+    });
+    document.querySelectorAll('#announcementsList .badge-info').forEach(b => b.remove());
+  }
+
   // ══ MAINTENANCE ════════════════════════════════════
   function statusLabel(status) {
     const map = {
@@ -1345,6 +1395,10 @@
       });
       const requests = await res.json();
       if (!res.ok) throw new Error(requests.message || 'Failed to load requests');
+
+      const openCount = requests.filter(r => r.status === 'pending' || r.status === 'in-progress').length;
+      const statRequestEl = document.getElementById('statRequestCount');
+      if (statRequestEl) statRequestEl.textContent = openCount;
 
       list.innerHTML = requests.length ? requests.map(r => {
         const s = statusLabel(r.status);
@@ -1481,6 +1535,7 @@
 
   loadStudentData();
   loadMaintenanceHistory();
+  loadAnnouncements();
 
 
   /* ── Page switching ── */
@@ -1501,6 +1556,7 @@
     document.getElementById('pageTitle').textContent = pageTitles[id] || id;
     closeSidebar();
     document.querySelector('.page-content').scrollTo({ top: 0 });
+    if (id === 'announcements') markAnnouncementsSeen();
   }
 
   /* ── Sidebar toggle (mobile) ── */
