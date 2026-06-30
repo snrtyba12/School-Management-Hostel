@@ -312,33 +312,162 @@
 
   <!-- ── PAGE: ROOMS ── -->
   <div class="content page-section" id="page-rooms">
+
+    <!-- Room Stats Row -->
+    <div class="stats-grid" id="roomStatsGrid" style="margin-bottom:1.5rem;">
+      <div class="stat-card">
+        <div><div class="stat-label">Total Rooms</div><div class="stat-value" id="roomStatTotal">—</div><div class="stat-sub">All room entries</div></div>
+        <div class="stat-icon icon-blue"><i class="fa-solid fa-bed"></i></div>
+      </div>
+      <div class="stat-card">
+        <div><div class="stat-label">Available</div><div class="stat-value" id="roomStatAvailable">—</div><div class="stat-sub">Open for allocation</div></div>
+        <div class="stat-icon icon-green"><i class="fa-solid fa-door-open"></i></div>
+      </div>
+      <div class="stat-card">
+        <div><div class="stat-label">Occupied</div><div class="stat-value" id="roomStatOccupied">—</div><div class="stat-sub">Currently filled</div></div>
+        <div class="stat-icon icon-yellow"><i class="fa-solid fa-person"></i></div>
+      </div>
+      <div class="stat-card">
+        <div><div class="stat-label">Maintenance</div><div class="stat-value" id="roomStatMaint">—</div><div class="stat-sub">Under repair</div></div>
+        <div class="stat-icon icon-red"><i class="fa-solid fa-wrench"></i></div>
+      </div>
+    </div>
+
+    <!-- Add Room + Filter Bar -->
+    <div class="search-bar" style="margin-bottom:1.2rem;">
+      <input class="search-input" type="text" id="roomSearchInput" placeholder="Search by room no. or block…"/>
+      <select class="search-select" id="roomTypeFilter">
+        <option value="">All Types</option>
+        <option value="single">Single</option>
+        <option value="double">Double</option>
+        <option value="triple">Triple</option>
+        <option value="quad">Quad</option>
+        <option value="suite">Suite</option>
+      </select>
+      <select class="search-select" id="roomStatusFilter">
+        <option value="">All Statuses</option>
+        <option value="available">Available</option>
+        <option value="occupied">Occupied</option>
+        <option value="maintenance">Maintenance</option>
+        <option value="reserved">Reserved</option>
+      </select>
+      <button class="search-btn" onclick="renderRooms()">Filter</button>
+      <button class="search-btn" style="background:var(--green);color:#fff;margin-left:auto;" onclick="openAddRoomModal()">
+        <i class="fa-solid fa-plus"></i> Add Room
+      </button>
+    </div>
+
+    <!-- Rooms Table -->
     <div class="card">
       <div class="card-header">
-        <div><h3>Room Management</h3><p>All room types and availability</p></div>
+        <div><h3>Room Management</h3><p id="roomCountText">Loading…</p></div>
+        <button class="act-btn act-confirm" onclick="openAddRoomModal()" style="padding:0.5rem 1.1rem;">+ Add Room</button>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Room Type</th>
+              <th>#</th>
+              <th>Room No.</th>
+              <th>Block</th>
+              <th>Floor</th>
+              <th>Type</th>
               <th>Capacity</th>
-              <th>Total Rooms</th>
-              <th>Occupied</th>
-              <th>Available</th>
+              <th>Occupants</th>
+              <th>Available Beds</th>
               <th>Price / Sem</th>
+              <th>Gender</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <tr><td><strong>Single Room</strong></td><td>1</td><td>40</td><td>38</td><td>2</td><td>₦45,000</td><td><span class="badge badge-pending">Almost Full</span></td></tr>
-            <tr><td><strong>Double Room</strong></td><td>2</td><td>30</td><td>28</td><td>2</td><td>₦30,000</td><td><span class="badge badge-confirmed">Available</span></td></tr>
-            <tr><td><strong>Triple Room</strong></td><td>3</td><td>20</td><td>14</td><td>6</td><td>₦20,000</td><td><span class="badge badge-confirmed">Available</span></td></tr>
-            <tr><td><strong>Quad Room</strong></td><td>4</td><td>20</td><td>16</td><td>4</td><td>₦15,000</td><td><span class="badge badge-confirmed">Available</span></td></tr>
+          <tbody id="roomsTableBody">
+            <tr><td colspan="12" style="text-align:center;color:var(--muted);padding:2rem;">Loading rooms…</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
+
+  <!-- ── ADD/EDIT ROOM MODAL ── -->
+  <div id="roomModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:14px;padding:2rem;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,0.2);position:relative;max-height:90vh;overflow-y:auto;">
+      <button onclick="closeRoomModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);">✕</button>
+      <h3 id="roomModalTitle" style="margin-bottom:1.4rem;font-size:1.15rem;">Add New Room</h3>
+      <input type="hidden" id="roomModalId"/>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div>
+          <label class="modal-label">Room Number *</label>
+          <input class="search-input" id="rmRoomNumber" placeholder="e.g. 101" style="width:100%;"/>
+        </div>
+        <div>
+          <label class="modal-label">Block</label>
+          <input class="search-input" id="rmBlock" placeholder="e.g. A, B, C" style="width:100%;"/>
+        </div>
+        <div>
+          <label class="modal-label">Floor</label>
+          <input class="search-input" id="rmFloor" placeholder="e.g. Ground, 1st" style="width:100%;"/>
+        </div>
+        <div>
+          <label class="modal-label">Room Type *</label>
+          <select class="search-select" id="rmType" style="width:100%;" onchange="autoFillCapacity()">
+            <option value="">Select type</option>
+            <option value="single">Single</option>
+            <option value="double">Double</option>
+            <option value="triple">Triple</option>
+            <option value="quad">Quad</option>
+            <option value="suite">Suite</option>
+          </select>
+        </div>
+        <div>
+          <label class="modal-label">Capacity (beds) *</label>
+          <input class="search-input" id="rmCapacity" type="number" min="1" max="10" placeholder="e.g. 2" style="width:100%;"/>
+        </div>
+        <div>
+          <label class="modal-label">Current Occupants</label>
+          <input class="search-input" id="rmOccupants" type="number" min="0" placeholder="e.g. 1" style="width:100%;"/>
+        </div>
+        <div>
+          <label class="modal-label">Price per Semester (₦)</label>
+          <input class="search-input" id="rmPrice" type="number" placeholder="e.g. 30000" style="width:100%;"/>
+        </div>
+        <div>
+          <label class="modal-label">Gender</label>
+          <select class="search-select" id="rmGender" style="width:100%;">
+            <option value="mixed">Mixed</option>
+            <option value="male">Male Only</option>
+            <option value="female">Female Only</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="modal-label">Occupancy Status *</label>
+          <select class="search-select" id="rmStatus" style="width:100%;">
+            <option value="available">Available</option>
+            <option value="occupied">Occupied</option>
+            <option value="maintenance">Under Maintenance</option>
+            <option value="reserved">Reserved</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;">
+          <label class="modal-label">Notes / Description</label>
+          <textarea class="search-input" id="rmNotes" placeholder="Any extra info about the room…" style="width:100%;height:70px;resize:vertical;padding:0.7rem;"></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:0.8rem;margin-top:1.5rem;justify-content:flex-end;">
+        <button class="act-btn act-view" onclick="closeRoomModal()">Cancel</button>
+        <button class="act-btn act-confirm" id="roomModalSaveBtn" onclick="saveRoom()">Save Room</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .modal-label { font-size:0.8rem;font-weight:600;display:block;margin-bottom:0.35rem;color:var(--dark); }
+    #roomModal.open { display:flex !important; }
+    .room-avail-bar { display:flex;align-items:center;gap:0.5rem; }
+    .room-avail-bar .progress-bar { flex:1;height:6px; }
+  </style>
 
   <!-- ── PAGE: RESIDENTS ── -->
   <div class="content page-section" id="page-residents">
@@ -1012,6 +1141,235 @@
         if (e.target.id === 'maintStatusFilter') renderMaintenance();
       });
 
+      // ══ ROOMS ══════════════════════════════════════════
+      // Local storage key for rooms (replace with API calls when backend is ready)
+      const ROOMS_KEY = 'yabatech_rooms_v1';
+
+      const DEFAULT_ROOMS = [
+        { id: 'r1', roomNumber: '101', block: 'A', floor: 'Ground', type: 'single',   capacity: 1, occupants: 1, price: 45000, gender: 'female', status: 'occupied',     notes: '' },
+        { id: 'r2', roomNumber: '102', block: 'A', floor: 'Ground', type: 'single',   capacity: 1, occupants: 0, price: 45000, gender: 'female', status: 'available',    notes: '' },
+        { id: 'r3', roomNumber: '201', block: 'A', floor: '1st',    type: 'double',   capacity: 2, occupants: 2, price: 30000, gender: 'male',   status: 'occupied',     notes: '' },
+        { id: 'r4', roomNumber: '202', block: 'A', floor: '1st',    type: 'double',   capacity: 2, occupants: 1, price: 30000, gender: 'male',   status: 'available',    notes: '' },
+        { id: 'r5', roomNumber: '301', block: 'B', floor: 'Ground', type: 'triple',   capacity: 3, occupants: 3, price: 20000, gender: 'female', status: 'occupied',     notes: '' },
+        { id: 'r6', roomNumber: '302', block: 'B', floor: 'Ground', type: 'triple',   capacity: 3, occupants: 1, price: 20000, gender: 'female', status: 'available',    notes: 'New mattresses' },
+        { id: 'r7', roomNumber: '401', block: 'B', floor: '2nd',    type: 'quad',     capacity: 4, occupants: 4, price: 15000, gender: 'male',   status: 'occupied',     notes: '' },
+        { id: 'r8', roomNumber: '402', block: 'B', floor: '2nd',    type: 'quad',     capacity: 4, occupants: 0, price: 15000, gender: 'mixed',  status: 'maintenance',  notes: 'Ceiling repair' },
+        { id: 'r9', roomNumber: '501', block: 'C', floor: '3rd',    type: 'suite',    capacity: 2, occupants: 0, price: 90000, gender: 'female', status: 'reserved',     notes: 'VIP suite' },
+        { id:'r10', roomNumber: '103', block: 'A', floor: 'Ground', type: 'single',   capacity: 1, occupants: 0, price: 45000, gender: 'male',   status: 'available',    notes: '' },
+      ];
+
+      function getRooms() {
+        try {
+          const saved = localStorage.getItem(ROOMS_KEY);
+          return saved ? JSON.parse(saved) : DEFAULT_ROOMS;
+        } catch { return DEFAULT_ROOMS; }
+      }
+
+      function saveRoomsLocal(rooms) {
+        localStorage.setItem(ROOMS_KEY, JSON.stringify(rooms));
+      }
+
+      function genId() {
+        return 'r' + Date.now() + Math.random().toString(36).slice(2, 6);
+      }
+
+      function loadRooms() {
+        renderRooms();
+        updateRoomStats();
+      }
+
+      function updateRoomStats() {
+        const rooms = getRooms();
+        document.getElementById('roomStatTotal').textContent     = rooms.length;
+        document.getElementById('roomStatAvailable').textContent = rooms.filter(r => r.status === 'available').length;
+        document.getElementById('roomStatOccupied').textContent  = rooms.filter(r => r.status === 'occupied').length;
+        document.getElementById('roomStatMaint').textContent     = rooms.filter(r => r.status === 'maintenance').length;
+      }
+
+      function renderRooms() {
+        const tbody = document.getElementById('roomsTableBody');
+        let rooms = getRooms();
+        const search = (document.getElementById('roomSearchInput')?.value || '').toLowerCase();
+        const typeF  = document.getElementById('roomTypeFilter')?.value || '';
+        const statF  = document.getElementById('roomStatusFilter')?.value || '';
+
+        const filtered = rooms.filter(r => {
+          const matchSearch = !search || r.roomNumber.toLowerCase().includes(search) || (r.block || '').toLowerCase().includes(search);
+          const matchType   = !typeF  || r.type   === typeF;
+          const matchStat   = !statF  || r.status === statF;
+          return matchSearch && matchType && matchStat;
+        });
+
+        document.getElementById('roomCountText').textContent = `${rooms.length} rooms total · ${rooms.filter(r=>r.status==='available').length} available`;
+
+        const statusMap = {
+          available:   ['badge-confirmed',  'Available'],
+          occupied:    ['badge-pending',    'Occupied'],
+          maintenance: ['badge-rejected',   'Maintenance'],
+          reserved:    ['badge-new',        'Reserved'],
+        };
+
+        const capPct = r => r.capacity > 0 ? Math.round((r.occupants / r.capacity) * 100) : 0;
+        const fillColor = pct => pct >= 100 ? 'fill-red' : pct >= 80 ? 'fill-yellow' : 'fill-green';
+
+        tbody.innerHTML = filtered.length ? filtered.map((r, i) => {
+          const avail = Math.max(0, r.capacity - r.occupants);
+          const pct   = capPct(r);
+          const [cls, label] = statusMap[r.status] || statusMap.available;
+          return `
+          <tr>
+            <td>${String(i+1).padStart(3,'0')}</td>
+            <td><strong>Rm ${r.roomNumber}</strong></td>
+            <td>${r.block ? 'Block ' + r.block : '—'}</td>
+            <td>${r.floor || '—'}</td>
+            <td style="text-transform:capitalize;">${r.type}</td>
+            <td>${r.capacity} bed${r.capacity !== 1 ? 's' : ''}</td>
+            <td>
+              <div class="room-avail-bar">
+                <span>${r.occupants}/${r.capacity}</span>
+                <div class="progress-bar"><div class="progress-fill ${fillColor(pct)}" style="width:${pct}%"></div></div>
+              </div>
+            </td>
+            <td>
+              ${avail > 0
+                ? `<span style="color:var(--green);font-weight:700;">${avail} free</span>`
+                : `<span style="color:var(--red);font-weight:700;">Full</span>`}
+            </td>
+            <td>₦${Number(r.price||0).toLocaleString()}</td>
+            <td style="text-transform:capitalize;">${r.gender||'—'}</td>
+            <td><span class="badge ${cls}">${label}</span></td>
+            <td>
+              <div class="action-btns">
+                <button class="act-btn act-confirm" onclick="openEditRoomModal('${r.id}')">Edit</button>
+                <button class="act-btn act-reject"  onclick="deleteRoom('${r.id}')">Del</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('')
+        : `<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:2rem;">No rooms match your filters</td></tr>`;
+
+        updateRoomStats();
+      }
+
+      function autoFillCapacity() {
+        const map = { single:1, double:2, triple:3, quad:4, suite:2 };
+        const t = document.getElementById('rmType').value;
+        if (map[t]) document.getElementById('rmCapacity').value = map[t];
+        const priceMap = { single:45000, double:30000, triple:20000, quad:15000, suite:90000 };
+        if (priceMap[t] && !document.getElementById('rmPrice').value) {
+          document.getElementById('rmPrice').value = priceMap[t];
+        }
+      }
+
+      function openAddRoomModal() {
+        document.getElementById('roomModalTitle').textContent = 'Add New Room';
+        document.getElementById('roomModalId').value = '';
+        ['rmRoomNumber','rmBlock','rmFloor','rmNotes'].forEach(id => document.getElementById(id).value = '');
+        ['rmCapacity','rmOccupants','rmPrice'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('rmType').value   = '';
+        document.getElementById('rmGender').value = 'mixed';
+        document.getElementById('rmStatus').value = 'available';
+        document.getElementById('roomModal').classList.add('open');
+      }
+
+      function openEditRoomModal(id) {
+        const rooms = getRooms();
+        const r = rooms.find(x => x.id === id);
+        if (!r) return;
+        document.getElementById('roomModalTitle').textContent = `Edit Room ${r.roomNumber}`;
+        document.getElementById('roomModalId').value    = r.id;
+        document.getElementById('rmRoomNumber').value   = r.roomNumber;
+        document.getElementById('rmBlock').value        = r.block || '';
+        document.getElementById('rmFloor').value        = r.floor || '';
+        document.getElementById('rmType').value         = r.type;
+        document.getElementById('rmCapacity').value     = r.capacity;
+        document.getElementById('rmOccupants').value    = r.occupants;
+        document.getElementById('rmPrice').value        = r.price || '';
+        document.getElementById('rmGender').value       = r.gender || 'mixed';
+        document.getElementById('rmStatus').value       = r.status;
+        document.getElementById('rmNotes').value        = r.notes || '';
+        document.getElementById('roomModal').classList.add('open');
+      }
+
+      function closeRoomModal() {
+        document.getElementById('roomModal').classList.remove('open');
+      }
+
+      function saveRoom() {
+        const roomNumber = document.getElementById('rmRoomNumber').value.trim();
+        const type       = document.getElementById('rmType').value;
+        const capacity   = parseInt(document.getElementById('rmCapacity').value) || 0;
+
+        if (!roomNumber) { alert('Please enter a room number.'); return; }
+        if (!type)        { alert('Please select a room type.');  return; }
+        if (!capacity)    { alert('Please set a valid capacity.'); return; }
+
+        const occupants = parseInt(document.getElementById('rmOccupants').value) || 0;
+        if (occupants > capacity) { alert('Occupants cannot exceed capacity.'); return; }
+
+        const editId = document.getElementById('roomModalId').value;
+        let rooms = getRooms();
+
+        const entry = {
+          id:         editId || genId(),
+          roomNumber,
+          block:      document.getElementById('rmBlock').value.trim(),
+          floor:      document.getElementById('rmFloor').value.trim(),
+          type,
+          capacity,
+          occupants,
+          price:      parseInt(document.getElementById('rmPrice').value) || 0,
+          gender:     document.getElementById('rmGender').value,
+          status:     document.getElementById('rmStatus').value,
+          notes:      document.getElementById('rmNotes').value.trim(),
+        };
+
+        // Auto-correct status based on occupancy
+        if (entry.status !== 'maintenance' && entry.status !== 'reserved') {
+          entry.status = entry.occupants >= entry.capacity ? 'occupied' : 'available';
+        }
+
+        if (editId) {
+          rooms = rooms.map(r => r.id === editId ? entry : r);
+        } else {
+          // Check duplicate room number in same block
+          const dup = rooms.find(r => r.roomNumber === roomNumber && r.block === entry.block);
+          if (dup) { alert(`Room ${roomNumber} already exists in Block ${entry.block || '(no block)'}.`); return; }
+          rooms.push(entry);
+        }
+
+        saveRoomsLocal(rooms);
+        closeRoomModal();
+        renderRooms();
+
+        // ── Try to sync with backend (non-blocking) ──
+        const method = editId ? 'PUT' : 'POST';
+        const path   = editId ? `/api/admin/rooms/${editId}` : '/api/admin/rooms';
+        adminFetch(path, { method, body: JSON.stringify(entry) })
+          .catch(() => {/* silent — local already saved */});
+      }
+
+      function deleteRoom(id) {
+        if (!confirm('Delete this room? This cannot be undone.')) return;
+        let rooms = getRooms().filter(r => r.id !== id);
+        saveRoomsLocal(rooms);
+        renderRooms();
+        adminFetch(`/api/admin/rooms/${id}`, { method: 'DELETE' }).catch(() => {});
+      }
+
+      // Live filter inputs
+      document.addEventListener('input', (e) => {
+        if (['roomSearchInput','roomTypeFilter','roomStatusFilter'].includes(e.target.id)) renderRooms();
+      });
+      document.addEventListener('change', (e) => {
+        if (['roomTypeFilter','roomStatusFilter'].includes(e.target.id)) renderRooms();
+      });
+
+      // Close modal on backdrop click
+      document.getElementById('roomModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('roomModal')) closeRoomModal();
+      });
+
       // ══ INITIAL LOAD ═══════════════════════════════════
       loadStats();
       loadApplications();
@@ -1019,6 +1377,7 @@
       loadMessages();
       loadAnnouncements();
       loadMaintenance();
+      loadRooms();
     </script>
 </body>
 </html>
