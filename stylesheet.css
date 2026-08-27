@@ -743,7 +743,9 @@ footer span {
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
-
+.mission-images img:only-child {
+  grid-column: 1 / -1;
+}
 .mission-images img {
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(201,149,42,0.15);
